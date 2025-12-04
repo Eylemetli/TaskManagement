@@ -17,12 +17,14 @@ namespace TaskManagement
             //1 Controller servislerini ekle
             builder.Services.AddControllers();
 
+
             builder.Services.AddScoped<ITaskService, TaskService>();
 
             //Veritaban? ba?lant?s?n? aktif et
 
 
            
+
 
 
             builder.Services.AddDbContext<AppDbContext>(options =>
@@ -43,8 +45,6 @@ namespace TaskManagement
             app.UseRouting();
             app.UseAuthorization();
 
-
-            //Controller endpointlerini map et-API controller'lar?n? çal??t?r
 
             //Controller endpointlerini map et
 
