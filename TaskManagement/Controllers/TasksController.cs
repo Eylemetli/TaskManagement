@@ -10,14 +10,14 @@ namespace TaskManagement.Controllers
     {
         private readonly ITaskService _service;
 
-        public TasksController(ITaskService service)
         {
             _service = service;
         }
 
+        // GET: api/tasks
         [HttpGet]
-        public IActionResult GetAll() => Ok(_service.GetAll());
 
+        // GET: api/tasks/5
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -26,6 +26,7 @@ namespace TaskManagement.Controllers
             return Ok(task);
         }
 
+        // POST: api/tasks
         [HttpPost]
         public IActionResult Add(TaskItem task)
         {
@@ -33,6 +34,7 @@ namespace TaskManagement.Controllers
             return Ok(created);
         }
 
+        // PUT: api/tasks
         [HttpPut]
         public IActionResult Update(TaskItem task)
         {
@@ -41,6 +43,7 @@ namespace TaskManagement.Controllers
             return Ok(updated);
         }
 
+        // DELETE: api/tasks/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
