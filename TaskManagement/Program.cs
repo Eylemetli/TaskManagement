@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using TaskManagement.Services;
 using TaskManagement.Data;
 using Microsoft.EntityFrameworkCore;
-
+using FluentValidation.AspNetCore;
 
 namespace TaskManagement
 {
@@ -14,43 +14,40 @@ namespace TaskManagement
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //1 Controller servislerini ekle
-            builder.Services.AddControllers();
+            // Controllers + FluentValidation
+            builder.Services
+                .AddControllers()
+                .AddFluentValidation(config =>
+                {
+                    // Bu assembly içindeki tüm validatorlar? kaydeder
+                    config.RegisterValidatorsFromAssemblyContaining<Program>();
+                });
 
-
+            // Services & DB
             builder.Services.AddScoped<ITaskService, TaskService>();
-
-            //Veritaban? ba?lant?s?n? aktif et
-
-
-           
-
-
-
             builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
+            // Swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            //HTTP pipeline
-            if (!app.Environment.IsDevelopment())
+            // Swagger UI
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
-            }
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TaskManagement v1");
+                c.RoutePrefix = "swagger";
+            });
 
             app.UseHttpsRedirection();
-            app.UseRouting();
             app.UseAuthorization();
-
-
-            //Controller endpointlerini map et
-
             app.MapControllers();
-
             app.Run();
+
         }
     }
 }
+

@@ -13,42 +13,43 @@ namespace TaskManagement.Services
             _context = context;
         }
 
-        public List<TaskItem> GetAll()
+        public async Task<List<TaskItem>> GetAllAsync()
         {
-            return _context.Tasks.ToList();
+            return await _context.Tasks.ToListAsync();
         }
 
-        public TaskItem? GetById(int id)
+        public async Task<TaskItem?> GetByIdAsync(int id)
         {
-            return _context.Tasks.Find(id);
+            return await _context.Tasks.FindAsync(id);
         }
 
-        public TaskItem Add(TaskItem task)
+        public async Task<TaskItem> AddAsync(TaskItem task)
         {
             _context.Tasks.Add(task);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return task;
         }
 
-        public TaskItem? Update(TaskItem task)
+        public async Task<TaskItem?> UpdateAsync(TaskItem task)
         {
-            if (!_context.Tasks.Any(t => t.Id == task.Id))
+            if (!await _context.Tasks.AnyAsync(t => t.Id == task.Id))
                 return null;
 
             _context.Tasks.Update(task);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return task;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var t = _context.Tasks.Find(id);
+            var t = await _context.Tasks.FindAsync(id);
             if (t == null) return false;
 
             _context.Tasks.Remove(t);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return true;
         }
     }
 }
+
 

@@ -15,39 +15,63 @@ namespace TaskManagement.Controllers
             _service = service;
         }
 
+        // GET: api/tasks
         [HttpGet]
-        public IActionResult GetAll() => Ok(_service.GetAll());
-
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetAll()
         {
-            var task = _service.GetById(id);
+            var tasks = await _service.GetAllAsync();
+            return Ok(tasks);
+        }
+
+        // GET: api/tasks/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var task = await _service.GetByIdAsync(id);
             if (task == null) return NotFound();
             return Ok(task);
         }
 
+        // POST: api/tasks
         [HttpPost]
-        public IActionResult Add(TaskItem task)
+        public async Task<IActionResult> Add([FromBody] TaskCreateDto dto)
         {
-            var created = _service.Add(task);
+            var task = new TaskItem
+            {
+                Title = dto.Title,
+                Description = dto.Description,
+                IsCompleted = dto.IsCompleted
+            };
+
+            var created = await _service.AddAsync(task);
             return Ok(created);
         }
 
+        // PUT: api/tasks
         [HttpPut]
-        public IActionResult Update(TaskItem task)
+        public async Task<IActionResult> Update([FromBody] TaskUpdateDto dto)
         {
-            var updated = _service.Update(task);
-            if (updated == null) return NotFound();
+            var task = await _service.GetByIdAsync(dto.Id);
+            if (task == null) return NotFound();
+
+            task.Title = dto.Title;
+            task.Description = dto.Description;
+            task.IsCompleted = dto.IsCompleted;
+
+            var updated = await _service.UpdateAsync(task);
             return Ok(updated);
         }
 
+        // DELETE: api/tasks/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var ok = _service.Delete(id);
+            var ok = await _service.DeleteAsync(id);
             if (!ok) return NotFound();
             return Ok(new { message = "Silindi" });
         }
     }
 }
+
+
 
