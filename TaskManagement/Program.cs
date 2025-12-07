@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TaskManagement.Services;
@@ -14,12 +14,23 @@ namespace TaskManagement
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // CORS ayarları: React uygulamasının backend'e erişebilmesi için
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("http://localhost:5173") // React dev server adresi
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
+
             // Controllers + FluentValidation
             builder.Services
                 .AddControllers()
                 .AddFluentValidation(config =>
                 {
-                    // Bu assembly i�indeki t�m validatorlar? kaydeder
+                    // Bu assembly içindeki tüm validatorlar? kaydeder
                     config.RegisterValidatorsFromAssemblyContaining<Program>();
                 });
 
@@ -42,7 +53,10 @@ namespace TaskManagement
                 c.RoutePrefix = "swagger";
             });
 
+
             app.UseHttpsRedirection();
+            // CORS middleware: yukarıda tanımladığımız "AllowFrontend" politikasını kullan
+            app.UseCors("AllowFrontend");
             app.UseAuthorization();
             app.MapControllers();
             app.Run();
